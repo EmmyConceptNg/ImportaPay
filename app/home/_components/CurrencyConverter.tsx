@@ -3,13 +3,11 @@ import { ArrowDownUp } from "lucide-react";
 
 // Custom hook to fetch exchange rates
 interface ExchangeRates {
-  rate_naira?: number;
-  rate_dollar?: number;
-  rate_euro?: number;
-  rate_pound?: number;
-  rate_egp?: number;
-  rate_ksh?: number;
-  [key: string]: number | undefined;
+  rate_dollar?: string;
+  amount_in_naira?: string;
+  markedup_amount_in_naira?: string;
+  message?: string;
+  [key: string]: string | undefined;
 }
 
 const useExchangeRates = () => {
@@ -26,6 +24,7 @@ const useExchangeRates = () => {
         );
         const data = await response.json();
 
+        console.log(data);
         if (data.success) {
           setRates(data.response);
         } else {
@@ -60,21 +59,8 @@ const CurrencyConverter = () => {
   const [bottomCurrency, setBottomCurrency] = useState("USD");
 
   const currencies = [
-    { code: "NGN", name: "Nigerian Naira", flag: "🇳🇬", rateKey: "rate_naira" },
-    { code: "USD", name: "US Dollar", flag: "🇺🇸", rateKey: "rate_dollar" },
-    // { code: "EUR", name: "Euro", flag: "🇪🇺", rateKey: "rate_euro" },
-    // { code: "GBP", name: "British Pound", flag: "🇬🇧", rateKey: "rate_pound" },
-    // { code: "EGP", name: "Egyptian Pound", flag: "🇪🇬", rateKey: "rate_egp" },
-    // { code: "KES", name: "Kenyan Shilling", flag: "🇰🇪", rateKey: "rate_ksh" },
-    // {
-    //   code: "ZAR",
-    //   name: "South African Rand",
-    //   flag: "🇿🇦",
-    //   rateKey: "rate_zar",
-    // },
-    // { code: "CNY", name: "Chinese Yuan", flag: "🇨🇳", rateKey: "rate_rmb" },
-    // { code: "JPY", name: "Japanese Yen", flag: "🇯🇵", rateKey: "rate_jpy" },
-    // { code: "AED", name: "UAE Dirham", flag: "🇦🇪", rateKey: "rate_aed" },
+    { code: "NGN", name: "Nigerian Naira", flag: "🇳🇬" },
+    { code: "USD", name: "US Dollar", flag: "🇺🇸" },
   ];
 
   const convertCurrency = (
@@ -82,21 +68,31 @@ const CurrencyConverter = () => {
     fromCurrency: string,
     toCurrency: string
   ): string => {
-    if (!rates || !amount) return "0";
+    if (!rates || !amount || parseFloat(amount) === 0) return "0";
 
-    const fromRateKey =
-      currencies.find((c) => c.code === fromCurrency)?.rateKey || "";
-    const toRateKey =
-      currencies.find((c) => c.code === toCurrency)?.rateKey || "";
+    const amountValue = parseFloat(amount);
 
-    const fromRate =
-      fromRateKey && rates[fromRateKey] ? Number(rates[fromRateKey]) : 1;
-    const toRate = toRateKey && rates[toRateKey] ? Number(rates[toRateKey]) : 1;
+    // USD to NGN conversion using markedup_amount_in_naira
+    if (fromCurrency === "USD" && toCurrency === "NGN") {
+      const usdToNgnRate = parseFloat(
+        rates.markedup_amount_in_naira || rates.amount_in_naira || "0"
+      );
+      const result = amountValue * usdToNgnRate;
+      return result.toFixed(2);
+    }
 
-    const usdAmount = parseFloat(amount) * fromRate;
-    const result = usdAmount / toRate;
+    // NGN to USD conversion
+    if (fromCurrency === "NGN" && toCurrency === "USD") {
+      const ngnToUsdRate = parseFloat(
+        rates.markedup_amount_in_naira || rates.amount_in_naira || "0"
+      );
+      if (ngnToUsdRate === 0) return "0";
+      const result = amountValue / ngnToUsdRate;
+      return result.toFixed(2);
+    }
 
-    return result.toFixed(2);
+    // Same currency
+    return amount;
   };
 
   const handleTopAmountChange = (value: string) => {
