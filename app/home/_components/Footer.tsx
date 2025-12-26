@@ -88,6 +88,12 @@ const Footer = () => {
             {/* Legal Links */}
             <div className="flex space-x-6">
               <a
+                href="https://importapay.gitbook.io/importapay-t-and-c/global-aml-policy"
+                className="text-gray-600 hover:text-gray-900 text-sm transition-colors duration-200"
+              >
+                AML policy
+              </a>
+              <a
                 href="https://importapay.gitbook.io/importapay-t-and-c/privacy-policy"
                 className="text-gray-600 hover:text-gray-900 text-sm transition-colors duration-200"
               >
