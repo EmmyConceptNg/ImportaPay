@@ -80,8 +80,8 @@ const Footer = () => {
             {/* Copyright */}
             <div className="text-center lg:text-left">
               <p className="text-gray-600 text-sm">
-                (c) 2025 Importa Holdings Company LTD ( Company Number 16317892
-                ). All right reserved.
+                (c) {new Date().getFullYear()} Importa Holdings Company LTD (
+                Company Number 16317892 ). All right reserved.
               </p>
             </div>
 
