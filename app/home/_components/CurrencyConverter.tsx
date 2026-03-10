@@ -20,16 +20,20 @@ const useExchangeRates = () => {
     const fetchRates = async () => {
       try {
         setLoading(true);
+        const response = await fetch(
+          "https://importa-pay-payments-x72y4.ondigitalocean.app/api/toronet/rate",
+        );
+        const data = await response.json();
 
         // Existing USD → NGN rate
         const usdResponse = await fetch(
-          "https://importa-pay-payments-x72y4.ondigitalocean.app/api/toronet/rate"
+          "https://importa-pay-payments-x72y4.ondigitalocean.app/api/toronet/rate",
         );
         const usdData = await usdResponse.json();
 
         // New USDC → NGN rate
         const usdcResponse = await fetch(
-          "https://importa-pay-payments-x72y4.ondigitalocean.app/api/usdc/get-exchangerate/USDC?chain=ARBITRUM&tokenAmount=5"
+          "https://importa-pay-payments-x72y4.ondigitalocean.app/api/usdc/get-exchangerate/USDC?chain=ARBITRUM&tokenAmount=5",
         );
         const usdcData = await usdcResponse.json();
 
@@ -93,7 +97,7 @@ const CurrencyConverter = () => {
   const convertCurrency = (
     amount: string,
     fromCurrency: string,
-    toCurrency: string
+    toCurrency: string,
   ): string => {
     if (!rates || !amount || parseFloat(amount) === 0) return "0";
 
@@ -102,7 +106,7 @@ const CurrencyConverter = () => {
     // USD to NGN
     if (fromCurrency === "USD" && toCurrency === "NGN") {
       const usdToNgnRate = parseFloat(
-        rates.markedup_amount_in_naira || rates.amount_in_naira || "0"
+        rates.markedup_amount_in_naira || rates.amount_in_naira || "0",
       );
       const result = amountValue * usdToNgnRate;
       return result.toFixed(2);
@@ -111,7 +115,7 @@ const CurrencyConverter = () => {
     // NGN to USD
     if (fromCurrency === "NGN" && toCurrency === "USD") {
       const ngnToUsdRate = parseFloat(
-        rates.markedup_amount_in_naira || rates.amount_in_naira || "0"
+        rates.markedup_amount_in_naira || rates.amount_in_naira || "0",
       );
       if (ngnToUsdRate === 0) return "0";
       const result = amountValue / ngnToUsdRate;
